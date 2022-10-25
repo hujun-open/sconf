@@ -1,3 +1,6 @@
+![Build Status](https://github.com/hujun-open/sconf/actions/workflows/main.yml/badge.svg)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/hujun-open/sconf)](https://pkg.go.dev/github.com/hujun-open/sconf)
+
 Package sconf provides simple configuration managment for Golang application, with following features:
 
   - read configuration from flag and/or YAML file, mix&match, into a struct
