@@ -19,37 +19,37 @@ Example:
 package main
 
 import (
-    "fmt"
-    "sconf"
+	"fmt"
+	"sconf"
 )
 
 type Company struct {
-    Name string
+	//the usage tag is used for command line usage
+	Name string `usage:"company name"`
 }
 
 type Employee struct {
-    Name, Addr string
-    Employer   Company
+	Name     string `usage:"employee name"`
+	Addr     string `usage:"employee address"`
+	Employer Company
 }
+
 func main() {
-    //default config
-    def := Employee{
-        Name: "defName",
-        Addr: "defAddr",
-        Employer: Company{
-            Name: "defCom",
-        },
-    }
-    //create a new SConf instance with command line flags, with no default config file path
-    cnf, err := sconf.NewSConfCMDLine(def, "")
-    if err != nil {
-        panic(err)
-    }
-    // read configuration from all sources
-    ferr, aerr := cnf.ReadwithCMDLine()
-    fmt.Printf("ferr %v,aerr %v\n", ferr, aerr)
-    //return the configuration in a Employee struct
-    fmt.Printf("final result is %+v\n", cnf.GetConf())
+	//default config
+	def := Employee{
+		Name: "defName",
+		Addr: "defAddr",
+		Employer: Company{
+			Name: "defCom",
+		},
+	}
+	cnf, err := sconf.NewSConfCMDLine(def, "")
+	if err != nil {
+		panic(err)
+	}
+	ferr, aerr := cnf.ReadwithCMDLine()
+	fmt.Printf("ferr %v,aerr %v\n", ferr, aerr)
+	fmt.Printf("final result is %+v\n", cnf.GetConf())
 }
 ```
 Output:
@@ -77,4 +77,17 @@ final result is {Name:nameFromArgs Addr:addrFromFile Employer:{Name:comFromFile}
 .\test.exe -f .\test.yaml -employer-name comFromArgs
 ferr <nil>,aerr <nil>
 final result is {Name:nameFromFile Addr:addrFromFile Employer:{Name:comFromArgs}}
+```
+- command line usage
+```
+.\test.exe -?
+flag provided but not defined: -?
+Usage:
+  -f <filepath> : read from config file <filepath>
+  -addr <string> : employee address
+        default:defAddr
+  -employer-name <string> : company name
+        default:defCom
+  -name <string> : employee name
+        default:defName
 ```

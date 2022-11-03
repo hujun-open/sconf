@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/itzg/go-flagsfiller"
@@ -38,6 +39,7 @@ func NewSConf[T any](def T, defpath string, fset *flag.FlagSet) (*SConf[T], erro
 	if err != nil {
 		return nil, fmt.Errorf("failed to fill flagset, %w", err)
 	}
+	r.fset.Usage = r.printUsage
 	return r, nil
 }
 
@@ -80,6 +82,20 @@ func (cnf *SConf[T]) Read(args []string) (ferr, aerr error) {
 	}
 	aerr = cnf.fset.Parse(newargs)
 	return
+}
+
+func (cnf *SConf[T]) printUsage() {
+	indent := "  "
+	fmt.Println("Usage:")
+	fmt.Printf("%v-f <filepath> : read from config file <filepath>\n", indent)
+	cnf.fset.VisitAll(func(f *flag.Flag) {
+		fmt.Printf("%v-%v <%v> : %v\n", indent, f.Name,
+			reflect.Indirect(reflect.ValueOf(f.Value)).Kind(),
+			f.Usage)
+		if f.DefValue != "" {
+			fmt.Printf("%v\tdefault:%v\n", indent, f.DefValue)
+		}
+	})
 }
 
 // ReadCMDLine is same as Read, expcept the args is os.Args[1:]
